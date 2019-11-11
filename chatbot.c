@@ -332,6 +332,3 @@ int chatbot_do_smalltalk(int inc, char *inv[], char *response, int n) {
 	return 0;
 	
 }
-
-//test
-//test 1
