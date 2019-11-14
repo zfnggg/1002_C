@@ -15,6 +15,7 @@ typedef struct ini_t ini_t;
 ini_t*      ini_load(const char *filename);
 void        ini_free(ini_t *ini);
 const char* ini_get(ini_t *ini, const char *section, const char *key);
+void        ini_write(ini_t *ini, const char *section, const char *string, char *filename);
 int         ini_sget(ini_t *ini, const char *section, const char *key, const char *scanfmt, void *dst);
 
 #endif

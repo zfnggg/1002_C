@@ -256,6 +256,55 @@ const char* ini_get(ini_t *ini, const char *section, const char *key) {
   return NULL;
 }
 
+void ini_write(ini_t *ini, const char *section, const char *string, char *filename) {
+  FILE *fp;
+  fp = fopen(filename, "w");
+  if (!fp){
+    printf("File cannot be open");
+  }
+  int first = 1;
+
+  char *current_section = "";
+  char *val;
+  char *p = ini->data;
+  char *output = (char *)malloc(sizeof(char)*100);
+
+  if (*p == '\0') {
+    p = next(ini, p);
+  }
+
+  while (p < ini->end) {
+    if (*p == '[') {
+      /* Check if section is equal to the section searched for */
+      current_section = p + 1;
+      if (!strcmpci(section, current_section)){
+        sprintf(output, "[%s]\n%s\n", section, string);
+      }
+      else {
+        sprintf(output, "[%s]\n", section);
+      }
+
+    } else {
+      val = next(ini, p);
+      sprintf(output, "%s=%s\n", p, val);
+
+      p = val;
+    }
+    
+    if (first && *output == '['){
+      first = 0;
+    }
+    else if (*output == '['){
+      fwrite("\n", 1, 2, fp);
+    }
+    fwrite(output, 1, strlen(output)+1, fp);
+
+
+    p = next(ini, p);
+  }
+
+  fclose(fp);
+}
 
 int ini_sget(
   ini_t *ini, const char *section, const char *key,
