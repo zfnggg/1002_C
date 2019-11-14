@@ -307,9 +307,29 @@ int chatbot_do_save(int inc, char *inv[], char *response, int n) {
  *  0, otherwise
  */
 int chatbot_is_smalltalk(const char *intent) {
-	
+	char greeting[5][20]={"hi", "hey", "hello"}; //Store some possible greetings intents into arrays
+	char me[5][20]={"good", "how"};
+	char bye[5][20]={"goodbye", "bye", "see"};
+	int i;
+	for (i=0; i <= 2; i++){ //Loop through and see if first word matches greeting intents
+		char *currentgreeting = greeting[i];
+		if (compare_token(intent, currentgreeting) == 0){
+			return 1;
+		}
+	}
+	for (i=0; i <= 2; i++){
+		char *currentme = me[i];
+		if (compare_token(intent, currentme) == 0){
+			return 1;
+		}
+	}
+	for (i=0; i <= 2; i++){
+		char *currentbye = bye[i];
+		if (compare_token(intent, currentbye) == 0){
+			return 1;
+		}
+	}
 	/* to be implemented */
-	
 	return 0;
  
 }
@@ -326,8 +346,34 @@ int chatbot_is_smalltalk(const char *intent) {
  *   1, if the chatbot should stop chatting (e.g. the smalltalk was "goodbye" etc.)
  */
 int chatbot_do_smalltalk(int inc, char *inv[], char *response, int n) {
-	
-	/* to be implemented */
+	char st_reply_greeting[5][50]={"Hello!", "Hey there!", "Hihihi!"}; //Store some replies in the arrays
+	char st_reply_me[5][50]={"Good day to you too!", "I am good, you?", "Nice weather we're having."};
+	char st_reply_bye[5][50]={"Goodbye!", "Bye-bye!", "See you soon!"};
+	char greeting[5][20]={"hi", "hey", "hello"};
+	char me[5][20]={"good", "how"};
+	char bye[5][20]={"goodbye", "bye", "see"};
+	int i;
+	srand(time()); //Select a random number to select a random response from array
+	int random_reply=rand()%3; //Select a random number to select a random response from array
+	for (i=0; i <= 2; i++){ //Same loop as chatbot_is_smalltalk to check for an appropriate response to a greeting
+		char *currentgreeting = greeting[i];
+		if (compare_token(inv[0], currentgreeting) == 0){
+			snprintf(response, n, st_reply_greeting[random_reply]);
+		}
+	}
+	for (i=0; i <= 2; i++){
+		char *currentme = me[i];
+		if (compare_token(inv[0], currentme) == 0){
+			snprintf(response, n, st_reply_me[random_reply]);
+		}
+	}
+	for (i=0; i <= 2; i++){
+		char *currentbye = bye[i];
+		if (compare_token(inv[0], currentbye) == 0){
+			snprintf(response, n, st_reply_bye[random_reply]);
+			return 1; //Quits the program if the smalltalk contains a farewell greeting
+		}
+	}
 	
 	return 0;
 	
