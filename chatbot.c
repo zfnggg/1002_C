@@ -231,7 +231,7 @@ int chatbot_do_question(int inc, char *inv[], char *response, int n) {
 		snprintf(response, n, "I don\'t understand \"%s\"", inv[0]);
 	}
 	else if (knowledge_get(inv[0], entity, response, n) == KB_NOTFOUND){
-		snprintf(response, n, "I don\'t know. %s", inv);
+		snprintf(response, n, "I don\'t know. %s", *inv);
 
 	}
 	else if (knowledge_get(inv[0], entity, response, n) == KB_OK){

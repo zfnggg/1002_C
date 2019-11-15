@@ -31,25 +31,39 @@
  *   KB_NOTFOUND, if no response could be found
  *   KB_INVALID, if 'intent' is not a recognised question word
  */
-char knowledge_base[100][256]={
-	{"what"}, {"1002"}, {"1002 is a programming module"},
-  	{"where"}, {"1002"}, {"Pizzahut at tampines"}
-  };
+struct knowledge_node{
+	char intent[MAX_INTENT];
+	char entity[MAX_ENTITY];
+	char answer[MAX_RESPONSE];
+	struct knowledge_node *next;
+};
+typedef struct knowledge_node knowledge;
+typedef knowledge *pknowledge;
+
 int knowledge_get(const char *intent, const char *entity, char *response, int n) {
 	int i;
+	pknowledge head,temp;
+	pknowledge what1002 = (pknowledge)malloc(sizeof(knowledge));
+	pknowledge where1002 = (pknowledge)malloc(sizeof(knowledge));
+	strcpy(what1002->intent, "what");
+	strcpy(what1002->entity, "1002");
+	strcpy(what1002->answer, "1002 is a programming module");
+	strcpy(where1002->intent, "where");
+	strcpy(where1002->entity, "1002");
+	strcpy(where1002->answer, "SIT at NYP");
+	head = what1002;
+	what1002->next = where1002;
+	temp = head;
 	/* to be implemented */
-	for (i=0; i<sizeof(knowledge_base); i=i+3){
-		if(compare_token(intent, knowledge_base[i]) == 0 && compare_token(entity, knowledge_base[i+1]) == 0){
-			strcpy(response, knowledge_base[i+2]);
+	while (temp != NULL){
+		if (compare_token(intent, temp->intent) == 0 && compare_token(entity, temp->entity) == 0){
+			snprintf(response, n, temp->answer);
 			return KB_OK;
 		}
-		else {
-			return KB_NOTFOUND;
-		}
+		temp = temp->next;
 	}
-	if (compare_token(intent, "where") != 0 && compare_token(intent, "what") != 0 && compare_token(intent, "who") != 0){
-		return KB_INVALID;
-	}
+	
+	return KB_NOTFOUND;
 	
 }
 
