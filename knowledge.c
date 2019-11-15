@@ -34,6 +34,15 @@
 int knowledge_get(const char *intent, const char *entity, char *response, int n) {
 	
 	/* to be implemented */
+	if (compare_token(intent, "what") == 0 && compare_token(entity, "1002") == 0){
+		return KB_OK;
+	}
+	else
+	{
+		return KB_NOTFOUND;
+
+	}
+	
 	
 	return KB_NOTFOUND;
 	

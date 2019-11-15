@@ -193,6 +193,9 @@ int chatbot_do_load(int inc, char *inv[], char *response, int n) {
 int chatbot_is_question(const char *intent) {
 	
 	/* to be implemented */
+	if (compare_token(intent, "what") == 0 || compare_token(intent, "where") == 0 || compare_token(intent, "who") == 0){
+		return 1;
+	}
 	
 	return 0;
 	
@@ -213,8 +216,22 @@ int chatbot_is_question(const char *intent) {
  *   0 (the chatbot always continues chatting after a question)
  */
 int chatbot_do_question(int inc, char *inv[], char *response, int n) {
-	
+	int i=1;
 	/* to be implemented */
+	while (i < inc){
+		if (compare_token(inv[0], "what") == 0){
+			if (compare_token(inv[i], "is") == 0 || compare_token(inv[i], "are") == 0){
+				i++;
+			}
+			if(compare_token(inv[i], "1002") == 0){
+				snprintf(response, n, "1002 is a C program mod");
+			}
+			else {
+				snprintf(response, n, "I don\'t know, what is %s", inv[i]);
+			}
+		}
+		i++;
+	}
 	 
 	return 0;
 	 
