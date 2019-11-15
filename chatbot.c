@@ -216,21 +216,26 @@ int chatbot_is_question(const char *intent) {
  *   0 (the chatbot always continues chatting after a question)
  */
 int chatbot_do_question(int inc, char *inv[], char *response, int n) {
-	int i=1;
 	/* to be implemented */
-	while (i < inc){
-		if (compare_token(inv[0], "what") == 0){
-			if (compare_token(inv[i], "is") == 0 || compare_token(inv[i], "are") == 0){
-				i++;
-			}
-			if(compare_token(inv[i], "1002") == 0){
-				snprintf(response, n, "1002 is a C program mod");
-			}
-			else {
-				snprintf(response, n, "I don\'t know, what is %s", inv[i]);
-			}
+	int i, j;
+	char entity[MAX_ENTITY];
+	for (i=1; i < inc; i++){
+		if (compare_token(inv[i], "is") == 0 || compare_token(inv[i], "are") == 0){
+			i++;
 		}
-		i++;
+		if (compare_token(inv[i], "1002") == 0){
+			strcpy(entity, inv[i]);
+		}
+	}
+	if (knowledge_get(inv[0], entity, response, n) == KB_INVALID){
+		snprintf(response, n, "I don\'t understand \"%s\"", inv[0]);
+	}
+	else if (knowledge_get(inv[0], entity, response, n) == KB_NOTFOUND){
+		snprintf(response, n, "I don\'t know. %s", inv);
+
+	}
+	else if (knowledge_get(inv[0], entity, response, n) == KB_OK){
+		return 0;
 	}
 	 
 	return 0;

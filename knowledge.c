@@ -31,20 +31,25 @@
  *   KB_NOTFOUND, if no response could be found
  *   KB_INVALID, if 'intent' is not a recognised question word
  */
+char knowledge_base[100][256]={
+	{"what"}, {"1002"}, {"1002 is a programming module"},
+  	{"where"}, {"1002"}, {"Pizzahut at tampines"}
+  };
 int knowledge_get(const char *intent, const char *entity, char *response, int n) {
-	
+	int i;
 	/* to be implemented */
-	if (compare_token(intent, "what") == 0 && compare_token(entity, "1002") == 0){
-		return KB_OK;
+	for (i=0; i<sizeof(knowledge_base); i=i+3){
+		if(compare_token(intent, knowledge_base[i]) == 0 && compare_token(entity, knowledge_base[i+1]) == 0){
+			strcpy(response, knowledge_base[i+2]);
+			return KB_OK;
+		}
+		else {
+			return KB_NOTFOUND;
+		}
 	}
-	else
-	{
-		return KB_NOTFOUND;
-
+	if (compare_token(intent, "where") != 0 && compare_token(intent, "what") != 0 && compare_token(intent, "who") != 0){
+		return KB_INVALID;
 	}
-	
-	
-	return KB_NOTFOUND;
 	
 }
 
