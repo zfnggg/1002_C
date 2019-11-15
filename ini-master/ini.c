@@ -225,10 +225,11 @@ void ini_free(ini_t *ini) {
 }
 
 
-const char* ini_get(ini_t *ini, const char *section, const char *key) {
+const char* ini_get(ini_t *ini, const char *section, const char *key, char *string) {
   char *current_section = "";
   char *val;
   char *p = ini->data;
+  int section_found = 0;
 
   if (*p == '\0') {
     p = next(ini, p);
@@ -243,8 +244,10 @@ const char* ini_get(ini_t *ini, const char *section, const char *key) {
       /* Handle key */
       val = next(ini, p);
       if (!section || !strcmpci(section, current_section)) {
+        section_found = 1;
         if (!strcmpci(p, key)) {
-          return val;
+          strcpy(string, val);
+          return "KB_OK";
         }
       }
       p = val;
@@ -253,14 +256,20 @@ const char* ini_get(ini_t *ini, const char *section, const char *key) {
     p = next(ini, p);
   }
 
-  return NULL;
+  if (!section_found){
+    return "KB_NOTFOUND";
+  }
+
+  return "KB_INVALID";
 }
 
-void ini_write(ini_t *ini, const char *section, const char *string, char *filename) {
+void ini_write(ini_t *ini, const char *section, const char *key, const char *string) {
+  // Creates a file handle using a given filename
   FILE *fp;
-  fp = fopen(filename, "w");
+  fp = fopen("output.ini", "w");
   if (!fp){
     printf("File cannot be open");
+    return;
   }
   int first = 1;
 
@@ -268,6 +277,9 @@ void ini_write(ini_t *ini, const char *section, const char *string, char *filena
   char *val;
   char *p = ini->data;
   char *output = (char *)malloc(sizeof(char)*100);
+  char *temp = (char *)malloc(sizeof(char)*50);
+  int key_found = 0;
+  int section_found = 1;
 
   if (*p == '\0') {
     p = next(ini, p);
@@ -275,49 +287,40 @@ void ini_write(ini_t *ini, const char *section, const char *string, char *filena
 
   while (p < ini->end) {
     if (*p == '[') {
-      /* Check if section is equal to the section searched for */
       current_section = p + 1;
-      if (!strcmpci(section, current_section)){
-        sprintf(output, "[%s]\n%s\n", section, string);
+      section_found = strcmpci(current_section, section);
+      sprintf(output, "[%s]\n", current_section);
+    } 
+    else {
+      val = next(ini, p);
+      if (!section_found && !strcmpci(p, key)) {
+        sprintf(output, "%s=%s\n", p, string);
+        key_found = 1;
       }
       else {
-        sprintf(output, "[%s]\n", section);
+        sprintf(output, "%s=%s\n", p, val);
       }
-
-    } else {
-      val = next(ini, p);
-      sprintf(output, "%s=%s\n", p, val);
-
       p = val;
     }
-    
+
+    if (!section_found && !key_found && *next(ini, p)=='['){
+      sprintf(temp, "%s=%s\n", key, string);
+      fwrite(temp, 1, strlen(temp), fp);
+    }
+
     if (first && *output == '['){
       first = 0;
     }
     else if (*output == '['){
-      fwrite("\n", 1, 2, fp);
+      fwrite("\n", 1, 1, fp);
     }
-    fwrite(output, 1, strlen(output)+1, fp);
 
+    fwrite(output, 1, strlen(output), fp);
 
     p = next(ini, p);
   }
 
+  free(temp);
+  free(output);
   fclose(fp);
-}
-
-int ini_sget(
-  ini_t *ini, const char *section, const char *key,
-  const char *scanfmt, void *dst
-) {
-  const char *val = ini_get(ini, section, key);
-  if (!val) {
-    return 0;
-  }
-  if (scanfmt) {
-    sscanf(val, scanfmt, dst);
-  } else {
-    *((const char**) dst) = val;
-  }
-  return 1;
 }
