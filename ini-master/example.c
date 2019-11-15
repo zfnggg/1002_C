@@ -17,7 +17,7 @@ int main(){
     ini_write(config, "where", "SIT", "malloc");
 
     // Searching for the answer to a certain entity given an intent
-    // ini_get(config, intent, entity) -> returns a pointer to a string
+    // ini_get(config, intent, entity, string) -> returns a status and puts the answer in string
     strcpy(status, ini_get(config, "chocolate", "new", answer));
     if (strcmp(status, "KB_OK") == 0){
         printf("%s\n", answer);
