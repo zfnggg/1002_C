@@ -255,7 +255,15 @@ int chatbot_do_question(int inc, char *inv[], char *response, int n) {
  */
 int chatbot_is_reset(const char *intent) {
 	
-	/* to be implemented */
+	intent = tolower(intent);
+	if (strcmp(intent, "reset"))
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
 	
 	return 0;
 	
@@ -273,7 +281,29 @@ int chatbot_is_reset(const char *intent) {
  */
 int chatbot_do_reset(int inc, char *inv[], char *response, int n) {
 	
-	/* to be implemented */
+	for (int i = 0; i < MAX_RESPONSE; i++)
+	{
+		if (inv[i] != NULL || inv[0] == "reset")
+		{
+			for (int x = 0; x < MAX_RESPONSE; x++)
+			{
+				free(inv[i][x]);
+			}
+			free(inv[i]);
+		}
+		else
+		{
+			break;
+		}
+	}
+	for (int i = 0; i < n; i++)
+	{
+		free(response[i]);
+	}
+
+	return 0;
+
+}
 	 
 	return 0;
 	 
