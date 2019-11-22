@@ -152,7 +152,6 @@ int knowledge_write(ini_t **content, pknowledge *head) {
 	}
 	else{
 		pknowledge temp = *head;
-		*head = NULL;
 		while (temp != NULL){
 			ini_write(*content, temp->intent, temp->entity, temp->answer);
 			*content = ini_load("output.ini");

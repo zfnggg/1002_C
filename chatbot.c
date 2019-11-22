@@ -200,8 +200,6 @@ int chatbot_do_load(int inc, char *inv[], char *response, int n, ini_t **content
  *  0, otherwise
  */
 int chatbot_is_question(const char *intent) {
-	
-	/* to be implemented */
 	if (compare_token(intent, "what") == 0 || compare_token(intent, "where") == 0 || compare_token(intent, "who") == 0){
 		return 1;
 	}
@@ -225,32 +223,48 @@ int chatbot_is_question(const char *intent) {
  *   0 (the chatbot always continues chatting after a question)
  */
 int chatbot_do_question(int inc, char *inv[], char *response, int n, ini_t **content, pknowledge *head) {
-	char entity[MAX_ENTITY];
+	char entity[MAX_ENTITY], filler[5] = "";
+	int status;
 	
 	// assuming the 3rd word is the entity (will change)
-	strcpy(entity, inv[2]);
-	
-	int status = knowledge_get(inv[0], entity, response, n, content, head);
+	int i=1;
+	while (inv[i] != NULL){
+		if (compare_token(inv[i], "is") == 0 || compare_token(inv[i], "are") == 0 ){
+			strcpy(filler, inv[i]);
+			i++;
+		}
+		strcpy(entity, inv[i]);
+		status = knowledge_get(inv[0], entity, response, n, content, head);
+		
+		if (status == KB_OK){
+			return 0;
+		}
+		i++;
+	}
 	if (status == KB_INVALID){
 		snprintf(response, n, "I don\'t understand \"%s\"", inv[0]);
 	}
 	else if (status == KB_NOTFOUND){
 		char input[MAX_INPUT];
-		snprintf(response, n, "I don\'t know, %s?", *inv);
+		if (compare_token(filler, "") == 0){
+			snprintf(response, n, "I don\'t know, %s %s?", inv[0], entity);
+		}
+		else {
+			snprintf(response, n, "I don\'t know, %s %s %s?", inv[0], filler, entity);
+		}
 		printf("%s: %s\n", chatbot_botname(), response);
 		printf("%s: ", chatbot_username());
 		fgets(input, MAX_INPUT, stdin);
 		strtok(input, "\n");
-		if (knowledge_put(inv[0], inv[2], input, head) == 0){
+		if (knowledge_put(inv[0], inv[i-1], input, head) == 0){
 			snprintf(response, n, "Answer added successfully");
 		}
 		else {
 			snprintf(response, n, "There was a problem adding answer to database");
 		}
 	}
-	else if (status == KB_OK){
-		return 0;
-	}
+	
+	
 	 
 	return 0;
 	 
@@ -269,15 +283,8 @@ int chatbot_do_question(int inc, char *inv[], char *response, int n, ini_t **con
  */
 int chatbot_is_reset(const char *intent) {
 	
-	intent = tolower(intent);
-	if (compare_token(intent[0],"reset") == 0)
-	{
-		return 1;
-	}
-	else
-	{
 		return 0;
-	}
+	
 	
 }
 
@@ -292,25 +299,7 @@ int chatbot_is_reset(const char *intent) {
  *   0 (the chatbot always continues chatting after beign reset)
  */
 int chatbot_do_reset(int inc, char *inv[], char *response, int n) {
-	for (int i = 0; i < n; i++)
-	{
-		if (inv[i] != NULL || inv[0] == "reset")
-		{
-			for (int x = 0; x < n; x++)
-			{
-				free(inv[i][x]);
-			}
-			free(inv[i]);
-		}
-		else
-		{
-			break;
-		}
-	}
-	for (int i = 0; i < n; i++)
-	{
-		free(response[i]);
-	}
+	
 
 	return 0;
 
