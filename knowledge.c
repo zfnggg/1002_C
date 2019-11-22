@@ -17,6 +17,27 @@
 #include <string.h>
 #include "chat1002.h"
 
+int linked_lst_get(const char *intent, const char *entity, char *response, int n, pknowledge *head){
+	/* checks the linked list for any answer given the intent and the entity 
+	*  returns 0 upon successful, 1 upon not found
+	*/
+	int obtained = 0; // checks whether a value has beeen obtained
+	pknowledge temp = *head;
+	while (temp != NULL){
+		if (strcmp(temp->intent, intent)==0 && strcmp(temp->entity, entity)==0){
+			obtained = 1;
+			strcpy(response, temp->answer);
+		}
+		temp = temp->next;
+	}
+	if (obtained){
+		return 0;
+	}
+	else{
+		return 1;
+	}
+}
+
 /*
  * Get the response to a question.
  *
@@ -31,39 +52,16 @@
  *   KB_NOTFOUND, if no response could be found
  *   KB_INVALID, if 'intent' is not a recognised question word
  */
-struct knowledge_node{
-	char intent[MAX_INTENT];
-	char entity[MAX_ENTITY];
-	char answer[MAX_RESPONSE];
-	struct knowledge_node *next;
-};
-typedef struct knowledge_node knowledge;
-typedef knowledge *pknowledge;
 
-int knowledge_get(const char *intent, const char *entity, char *response, int n) {
-	int i;
-	pknowledge head,temp;
-	pknowledge what1002 = (pknowledge)malloc(sizeof(knowledge));
-	pknowledge where1002 = (pknowledge)malloc(sizeof(knowledge));
-	strcpy(what1002->intent, "what");
-	strcpy(what1002->entity, "1002");
-	strcpy(what1002->answer, "1002 is a programming module");
-	strcpy(where1002->intent, "where");
-	strcpy(where1002->entity, "1002");
-	strcpy(where1002->answer, "SIT at NYP");
-	head = what1002;
-	what1002->next = where1002;
-	temp = head;
-	/* to be implemented */
-	while (temp != NULL){
-		if (compare_token(intent, temp->intent) == 0 && compare_token(entity, temp->entity) == 0){
-			snprintf(response, n, temp->answer);
-			return KB_OK;
+int knowledge_get(const char *intent, const char *entity, char *response, int n, ini_t **content, pknowledge *head) {
+	/* Gets the answer from the linked list first, then if not found, searches the file content */
+	if (linked_lst_get(intent, entity, response, n, head) == 1){
+		if (*content == NULL){
+			return -1;
 		}
-		temp = temp->next;
+		return ini_get(*content, intent, entity, response);
 	}
-	
-	return KB_NOTFOUND;
+	return 0;
 	
 }
 
@@ -83,11 +81,31 @@ int knowledge_get(const char *intent, const char *entity, char *response, int n)
  *   KB_NOMEM, if there was a memory allocation failure
  *   KB_INVALID, if the intent is not a valid question word
  */
-int knowledge_put(const char *intent, const char *entity, const char *response) {
+int knowledge_put(const char *intent, const char *entity, const char *response, pknowledge *head) {
+	/* Adds a new node to the linked list */
+	pknowledge new = malloc(sizeof(knowledge));
+	if (new == NULL){
+		return KB_NOMEM;
+	}
+	strcpy(new->intent, intent);
+	strcpy(new->entity, entity);
+	strcpy(new->answer, response);
+	new->next = NULL;
+
+	if (*head == NULL){
+		*head = new;
+	}
+	else {
+		pknowledge temp = *head;
+		while (temp->next != NULL){
+			temp = temp->next;
+		}
+		temp->next = new;
+	}
 	
-	/* to be implemented */
+	return KB_OK;
 	
-	return KB_INVALID;
+	
 	
 }
 
@@ -124,8 +142,25 @@ void knowledge_reset() {
  * Input:
  *   f - the file
  */
-void knowledge_write(FILE *f) {
-	
-	/* to be implemented */
+int knowledge_write(ini_t **content, pknowledge *head) {
+	/* writes the linked list content into the file */
+	if (*head == NULL){
+		return -1;
+	}
+	else if (*content == NULL){
+		return -2;
+	}
+	else{
+		pknowledge temp = *head;
+		*head = NULL;
+		while (temp != NULL){
+			ini_write(*content, temp->intent, temp->entity, temp->answer);
+			*content = ini_load("output.ini");
+			pknowledge to_destroy = temp;
+			temp = temp->next;
+			free(to_destroy);
+		}
+		return 0;
+	}
 	
 }
