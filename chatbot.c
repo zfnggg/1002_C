@@ -269,7 +269,15 @@ int chatbot_do_question(int inc, char *inv[], char *response, int n, ini_t **con
  */
 int chatbot_is_reset(const char *intent) {
 	
-	return 0;
+	intent = tolower(intent);
+	if (compare_token(intent[0],"reset") == 0)
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
 	
 }
 
@@ -284,7 +292,25 @@ int chatbot_is_reset(const char *intent) {
  *   0 (the chatbot always continues chatting after beign reset)
  */
 int chatbot_do_reset(int inc, char *inv[], char *response, int n) {
-	
+	for (int i = 0; i < n; i++)
+	{
+		if (inv[i] != NULL || inv[0] == "reset")
+		{
+			for (int x = 0; x < n; x++)
+			{
+				free(inv[i][x]);
+			}
+			free(inv[i]);
+		}
+		else
+		{
+			break;
+		}
+	}
+	for (int i = 0; i < n; i++)
+	{
+		free(response[i]);
+	}
 
 	return 0;
 
