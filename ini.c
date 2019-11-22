@@ -25,7 +25,7 @@
 #include <string.h>
 #include <ctype.h>
 
-#include "ini.h"
+#include "chat1002.h"
 
 struct ini_t {
   char *data;
@@ -225,7 +225,7 @@ void ini_free(ini_t *ini) {
 }
 
 
-const char* ini_get(ini_t *ini, const char *section, const char *key, char *string) {
+int ini_get(ini_t *ini, const char *section, const char *key, char *string) {
   char *current_section = "";
   char *val;
   char *p = ini->data;
@@ -247,7 +247,7 @@ const char* ini_get(ini_t *ini, const char *section, const char *key, char *stri
         section_found = 1;
         if (!strcmpci(p, key)) {
           strcpy(string, val);
-          return "KB_OK";
+          return 0;
         }
       }
       p = val;
@@ -256,20 +256,28 @@ const char* ini_get(ini_t *ini, const char *section, const char *key, char *stri
     p = next(ini, p);
   }
 
-  if (!section_found){
-    return "KB_NOTFOUND";
+  if (section_found){
+    return -1;
   }
 
-  return "KB_INVALID";
+  return -2;
 }
 
+<<<<<<< Updated upstream:ini-master/ini.c
 void ini_write(ini_t *ini, const char *section, const char *key, const char *string) {
+=======
+int ini_write(ini_t *ini, const char *section, const char *key, const char *string) {
+>>>>>>> Stashed changes:ini.c
   // Creates a file handle using a given filename
   FILE *fp;
   fp = fopen("output.ini", "w");
   if (!fp){
     printf("File cannot be open");
+<<<<<<< Updated upstream:ini-master/ini.c
     return;
+=======
+    return -2;
+>>>>>>> Stashed changes:ini.c
   }
   int first = 1;
 
@@ -279,7 +287,16 @@ void ini_write(ini_t *ini, const char *section, const char *key, const char *str
   char *output = (char *)malloc(sizeof(char)*100);
   char *temp = (char *)malloc(sizeof(char)*50);
   int key_found = 0;
+<<<<<<< Updated upstream:ini-master/ini.c
   int section_found = 1;
+=======
+  int section_found = 0;
+  int correct_section;
+
+  if (output == NULL || temp == NULL){
+    return -3;
+  }
+>>>>>>> Stashed changes:ini.c
 
   if (*p == '\0') {
     p = next(ini, p);
@@ -323,4 +340,14 @@ void ini_write(ini_t *ini, const char *section, const char *key, const char *str
   free(temp);
   free(output);
   fclose(fp);
+<<<<<<< Updated upstream:ini-master/ini.c
+=======
+
+  if (section_found){
+    return 0;
+  }
+  else {
+    return -1;
+  }
+>>>>>>> Stashed changes:ini.c
 }

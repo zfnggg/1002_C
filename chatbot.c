@@ -79,7 +79,7 @@ const char *chatbot_username() {
  *   0, if the chatbot should continue chatting
  *   1, if the chatbot should stop (i.e. it detected the EXIT intent)
  */
-int chatbot_main(int inc, char *inv[], char *response, int n) {
+int chatbot_main(int inc, char *inv[], char *response, int n, ini_t **content, pknowledge *head) {
 	
 	/* check for empty input */
 	if (inc < 1) {
@@ -93,13 +93,13 @@ int chatbot_main(int inc, char *inv[], char *response, int n) {
 	else if (chatbot_is_smalltalk(inv[0]))
 		return chatbot_do_smalltalk(inc, inv, response, n);
 	else if (chatbot_is_load(inv[0]))
-		return chatbot_do_load(inc, inv, response, n);
+		return chatbot_do_load(inc, inv, response, n, content);
 	else if (chatbot_is_question(inv[0]))
-		return chatbot_do_question(inc, inv, response, n);
+		return chatbot_do_question(inc, inv, response, n, content, head);
 	else if (chatbot_is_reset(inv[0]))
 		return chatbot_do_reset(inc, inv, response, n);
 	else if (chatbot_is_save(inv[0]))
-		return chatbot_do_save(inc, inv, response, n);
+		return chatbot_do_save(inc, inv, response, n, content, head);
 	else {
 		snprintf(response, n, "I don't understand \"%s\".", inv[0]);
 		return 0;
@@ -154,11 +154,10 @@ int chatbot_do_exit(int inc, char *inv[], char *response, int n) {
  *  0, otherwise
  */
 int chatbot_is_load(const char *intent) {
-	
-	/* to be implemented */
-	
-	return 0;
-	
+	if (compare_token(intent, "load") == 0){
+		printf("load detected\n");
+	}
+	return compare_token(intent, "load") == 0;
 }
 
 
@@ -171,9 +170,20 @@ int chatbot_is_load(const char *intent) {
  * Returns:
  *   0 (the chatbot always continues chatting after loading knowledge)
  */
-int chatbot_do_load(int inc, char *inv[], char *response, int n) {
+int chatbot_do_load(int inc, char *inv[], char *response, int n, ini_t **content) {
 	
-	/* to be implemented */
+	// assuming the response includes a file name (change later)
+	int i = 1;
+	while (compare_token(inv[i], "from") == 0){
+		i++;
+	}
+	*content = ini_load(inv[i]);
+	if (content != NULL){
+		snprintf(response, n, "Load successful");
+	}
+	else {
+		snprintf(response, n, "Load failed");
+	}
 	 
 	return 0;
 	 
@@ -192,7 +202,15 @@ int chatbot_do_load(int inc, char *inv[], char *response, int n) {
  */
 int chatbot_is_question(const char *intent) {
 	
+<<<<<<< Updated upstream
 	/* to be implemented */
+=======
+	/* checks if intent is what, where or who */
+	if (compare_token(intent, "what") == 0 || compare_token(intent, "where") == 0 || compare_token(intent, "who") == 0){
+		printf("Question detected\n");
+		return 1;
+	}
+>>>>>>> Stashed changes
 	
 	return 0;
 	
@@ -212,9 +230,41 @@ int chatbot_is_question(const char *intent) {
  * Returns:
  *   0 (the chatbot always continues chatting after a question)
  */
+<<<<<<< Updated upstream
 int chatbot_do_question(int inc, char *inv[], char *response, int n) {
 	
 	/* to be implemented */
+=======
+int chatbot_do_question(int inc, char *inv[], char *response, int n, ini_t **content, pknowledge *head) {
+	/* to be implemented */
+
+	char entity[MAX_ENTITY];
+	
+	// assuming the 3rd word is the entity (will change)
+	strcpy(entity, inv[2]);
+	
+	int status = knowledge_get(inv[0], entity, response, n, content, head);
+	if (status == KB_INVALID){
+		snprintf(response, n, "I don\'t understand \"%s\"", inv[0]);
+	}
+	else if (status == KB_NOTFOUND){
+		char input[MAX_INPUT];
+		snprintf(response, n, "I don\'t know, %s?", *inv);
+		printf("%s: %s\n", chatbot_botname(), response);
+		printf("%s: ", chatbot_username());
+		fgets(input, MAX_INPUT, stdin);
+		strtok(input, "\n");
+		if (knowledge_put(inv[0], inv[2], input, head) == 0){
+			snprintf(response, n, "Answer added successfully");
+		}
+		else {
+			snprintf(response, n, "There was a problem adding answer to database");
+		}
+	}
+	else if (status == KB_OK){
+		return 0;
+	}
+>>>>>>> Stashed changes
 	 
 	return 0;
 	 
@@ -270,10 +320,12 @@ int chatbot_do_reset(int inc, char *inv[], char *response, int n) {
  */
 int chatbot_is_save(const char *intent) {
 	
-	/* to be implemented */
-	
-	return 0;
-	
+	if (compare_token(intent, "save") == 0){
+		printf("Save detected\n");
+		return 1;
+	}
+	else return 0;
+
 }
 
 
@@ -286,9 +338,18 @@ int chatbot_is_save(const char *intent) {
  * Returns:
  *   0 (the chatbot always continues chatting after saving knowledge)
  */
-int chatbot_do_save(int inc, char *inv[], char *response, int n) {
+int chatbot_do_save(int inc, char *inv[], char *response, int n, ini_t **content, pknowledge *head) {
 	
-	/* to be implemented */
+	int status = knowledge_write(content, head);
+	if (status == 0){
+		snprintf(response, n, "Successfully written");
+	}
+	else if (status == -1){
+		snprintf(response, n, "No knowledge base");
+	}
+	else{
+		snprintf(response, n, "No file to write to, Please load a file");
+	}
 	
 	return 0;
 	 
@@ -326,8 +387,39 @@ int chatbot_is_smalltalk(const char *intent) {
  *   1, if the chatbot should stop chatting (e.g. the smalltalk was "goodbye" etc.)
  */
 int chatbot_do_smalltalk(int inc, char *inv[], char *response, int n) {
+<<<<<<< Updated upstream
 	
 	/* to be implemented */
+=======
+	char st_reply_greeting[5][50]={"Hello!", "Hey there!", "Hihihi!"}; //Store some replies in the arrays
+	char st_reply_me[5][50]={"Good day to you too!", "I am good, you?", "Nice weather we're having."};
+	char st_reply_bye[5][50]={"Goodbye!", "Bye-bye!", "See you soon!"};
+	char greeting[5][20]={"hi", "hey", "hello"};
+	char me[5][20]={"good", "how"};
+	char bye[5][20]={"goodbye", "bye", "see"};
+	int i;
+	srand(time(NULL)); //Select a random number to select a random response from array
+	int random_reply=rand()%3; //Select a random number to select a random response from array
+	for (i=0; i <= 2; i++){ //Same loop as chatbot_is_smalltalk to check for an appropriate response to a greeting
+		char *currentgreeting = greeting[i];
+		if (compare_token(inv[0], currentgreeting) == 0){
+			snprintf(response, n, "%s\n", st_reply_greeting[random_reply]);
+		}
+	}
+	for (i=0; i <= 2; i++){
+		char *currentme = me[i];
+		if (compare_token(inv[0], currentme) == 0){
+			snprintf(response, n, "%s\n", st_reply_me[random_reply]);
+		}
+	}
+	for (i=0; i <= 2; i++){
+		char *currentbye = bye[i];
+		if (compare_token(inv[0], currentbye) == 0){
+			snprintf(response, n, "%s\n", st_reply_bye[random_reply]);
+			return 1; //Quits the program if the smalltalk contains a farewell greeting
+		}
+	}
+>>>>>>> Stashed changes
 	
 	return 0;
 	

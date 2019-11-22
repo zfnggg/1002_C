@@ -8,15 +8,12 @@
 
 #include <ctype.h>
 #include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include "chat1002.h"
 
 
 /* word delimiters */
 const char *delimiters = " ?\t\n";
- 
  
 /*
  * Main loop.
@@ -29,6 +26,8 @@ int main(int argc, char *argv[]) {
 	char output[MAX_RESPONSE];  /* the chatbot's output */
 	int len;                    /* length of a word */
 	int done = 0;               /* set to 1 to end the main loop */
+	ini_t *content = NULL;		/* A structure containing the data of a file and the end char */
+	pknowledge head = NULL;     /* A pointer to the linked list to store new data */
 	
 	/* initialise the chatbot */
 	inv[0] = "reset";
@@ -65,7 +64,7 @@ int main(int argc, char *argv[]) {
 		} while (inc < 1);
 		
 		/* invoke the chatbot */
-		done = chatbot_main(inc, inv, output, MAX_RESPONSE);
+		done = chatbot_main(inc, inv, output, MAX_RESPONSE, &content, &head);
 		printf("%s: %s\n", chatbot_botname(), output);
 		
 	} while (!done);
