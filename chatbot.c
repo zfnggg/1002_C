@@ -203,8 +203,11 @@ int chatbot_do_load(int inc, char *inv[], char *response, int n, ini_t **content
 int chatbot_is_question(const char *intent) {
 	
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 	/* to be implemented */
 =======
+=======
+>>>>>>> Stashed changes
 	/* checks if intent is what, where or who */
 	if (compare_token(intent, "what") == 0 || compare_token(intent, "where") == 0 || compare_token(intent, "who") == 0){
 		printf("Question detected\n");
@@ -231,10 +234,13 @@ int chatbot_is_question(const char *intent) {
  *   0 (the chatbot always continues chatting after a question)
  */
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 int chatbot_do_question(int inc, char *inv[], char *response, int n) {
 	
 	/* to be implemented */
 =======
+=======
+>>>>>>> Stashed changes
 int chatbot_do_question(int inc, char *inv[], char *response, int n, ini_t **content, pknowledge *head) {
 	/* to be implemented */
 

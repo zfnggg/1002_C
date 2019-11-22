@@ -17,7 +17,10 @@
 #include <string.h>
 #include "chat1002.h"
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 =======
+=======
+>>>>>>> Stashed changes
 
 int linked_lst_get(const char *intent, const char *entity, char *response, int n, pknowledge *head){
 	/* checks the linked list for any answer given the intent and the entity 
@@ -39,6 +42,9 @@ int linked_lst_get(const char *intent, const char *entity, char *response, int n
 		return 1;
 	}
 }
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 
 /*
@@ -55,6 +61,7 @@ int linked_lst_get(const char *intent, const char *entity, char *response, int n
  *   KB_NOTFOUND, if no response could be found
  *   KB_INVALID, if 'intent' is not a recognised question word
  */
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 int knowledge_get(const char *intent, const char *entity, char *response, int n) {
 	
@@ -76,6 +83,20 @@ int knowledge_get(const char *intent, const char *entity, char *response, int n,
 >>>>>>> Stashed changes
 }
 
+=======
+
+int knowledge_get(const char *intent, const char *entity, char *response, int n, ini_t **content, pknowledge *head) {
+
+	if (linked_lst_get(intent, entity, response, n, head) == 1){
+		if (*content == NULL){
+			return -1;
+		}
+		return ini_get(*content, intent, entity, response);
+	}
+	return 0;
+}
+
+>>>>>>> Stashed changes
 /*
  * Insert a new response to a question. If a response already exists for the
  * given intent and entity, it will be overwritten. Otherwise, it will be added
