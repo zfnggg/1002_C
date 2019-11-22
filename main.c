@@ -31,6 +31,7 @@ int main(int argc, char *argv[]) {
 	int done = 0;               /* set to 1 to end the main loop */
 	ini_t *content = NULL;		/* A structure containing the data of a file and the end char */
 	pknowledge head = NULL;     /* A pointer to the linked list to store new data */
+	history = fopen("history.txt", "w+");
 	
 	/* initialise the chatbot */
 	inv[0] = "reset";
@@ -39,6 +40,7 @@ int main(int argc, char *argv[]) {
 	
 	/* print a welcome message */
 	printf("%s: Hello, I'm %s.\n", chatbot_botname(), chatbot_botname());
+	fprintf(history, "%s: Hello, I'm %s.\n", chatbot_botname(), chatbot_botname());
 	
 	/* main command loop */
 	do {
@@ -47,6 +49,7 @@ int main(int argc, char *argv[]) {
 			/* read the line */
 			printf("%s: ", chatbot_username());
 			fgets(input, MAX_INPUT, stdin);
+			fprintf(history, "%s: %s", chatbot_username(), input);
 			
 			/* split it into words */
 			inc = 0;
@@ -69,6 +72,7 @@ int main(int argc, char *argv[]) {
 		/* invoke the chatbot */
 		done = chatbot_main(inc, inv, output, MAX_RESPONSE, &content, &head);
 		printf("%s: %s\n", chatbot_botname(), output);
+		fprintf(history, "%s: %s\n", chatbot_botname(), output);
 		
 	} while (!done);
 	

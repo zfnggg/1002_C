@@ -137,6 +137,7 @@ int chatbot_is_exit(const char *intent) {
 int chatbot_do_exit(int inc, char *inv[], char *response, int n) {
 	 
 	snprintf(response, n, "Goodbye!");
+	fclose(history);
 	 
 	return 1;
 	 

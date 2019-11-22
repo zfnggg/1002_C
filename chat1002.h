@@ -39,6 +39,7 @@ struct knowledge_node{
 };
 typedef struct knowledge_node knowledge;
 typedef knowledge *pknowledge;
+FILE *history;
 
 /* structure that will contain the data of the file as well as the end character */
 typedef struct ini_t ini_t;
