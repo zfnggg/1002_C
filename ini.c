@@ -263,21 +263,13 @@ int ini_get(ini_t *ini, const char *section, const char *key, char *string) {
   return -2;
 }
 
-<<<<<<< Updated upstream:ini-master/ini.c
-void ini_write(ini_t *ini, const char *section, const char *key, const char *string) {
-=======
 int ini_write(ini_t *ini, const char *section, const char *key, const char *string) {
->>>>>>> Stashed changes:ini.c
   // Creates a file handle using a given filename
   FILE *fp;
   fp = fopen("output.ini", "w");
   if (!fp){
     printf("File cannot be open");
-<<<<<<< Updated upstream:ini-master/ini.c
-    return;
-=======
     return -2;
->>>>>>> Stashed changes:ini.c
   }
   int first = 1;
 
@@ -287,16 +279,12 @@ int ini_write(ini_t *ini, const char *section, const char *key, const char *stri
   char *output = (char *)malloc(sizeof(char)*100);
   char *temp = (char *)malloc(sizeof(char)*50);
   int key_found = 0;
-<<<<<<< Updated upstream:ini-master/ini.c
-  int section_found = 1;
-=======
   int section_found = 0;
   int correct_section;
 
   if (output == NULL || temp == NULL){
     return -3;
   }
->>>>>>> Stashed changes:ini.c
 
   if (*p == '\0') {
     p = next(ini, p);
@@ -340,8 +328,6 @@ int ini_write(ini_t *ini, const char *section, const char *key, const char *stri
   free(temp);
   free(output);
   fclose(fp);
-<<<<<<< Updated upstream:ini-master/ini.c
-=======
 
   if (section_found){
     return 0;
@@ -349,5 +335,4 @@ int ini_write(ini_t *ini, const char *section, const char *key, const char *stri
   else {
     return -1;
   }
->>>>>>> Stashed changes:ini.c
 }
