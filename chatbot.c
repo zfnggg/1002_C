@@ -100,6 +100,9 @@ int chatbot_main(int inc, char *inv[], char *response, int n, ini_t **content, p
 		return chatbot_do_reset(inc, inv, response, n);
 	else if (chatbot_is_save(inv[0]))
 		return chatbot_do_save(inc, inv, response, n, content, head);
+	else if (chatbot_is_bored(inv[0])){
+		return chatbot_do_game(inc, inv, response, n);
+	}
 	else {
 		snprintf(response, n, "I don't understand \"%s\".", inv[0]);
 		return 0;
@@ -107,6 +110,18 @@ int chatbot_main(int inc, char *inv[], char *response, int n, ini_t **content, p
 
 }
 
+int chatbot_is_bored(const char *intent){
+	if (compare_token(intent, "bored") == 0){
+		return 1;
+	}
+
+	return 0;
+}
+
+int chatbot_do_game(int inc, char *inv[], char *response, int n){
+	system("tictactoe.exe");
+	return 0;
+}
 
 /*
  * Determine whether an intent is EXIT.
@@ -387,7 +402,6 @@ int chatbot_is_smalltalk(const char *intent) {
 			return 1;
 		}
 	}
-	/* to be implemented */
 	return 0;
  
 }
