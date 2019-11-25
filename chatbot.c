@@ -43,6 +43,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "chat1002.h"
+#include <unistd.h>
  
  
 /*
@@ -100,7 +101,7 @@ int chatbot_main(int inc, char *inv[], char *response, int n, ini_t **content, p
 		return chatbot_do_reset(inc, inv, response, n);
 	else if (chatbot_is_save(inv[0]))
 		return chatbot_do_save(inc, inv, response, n, content, head);
-	else if (chatbot_is_bored(inv[0])){
+	else if (chatbot_is_bored(inc, inv)){
 		return chatbot_do_game(inc, inv, response, n);
 	}
 	else {
@@ -110,17 +111,29 @@ int chatbot_main(int inc, char *inv[], char *response, int n, ini_t **content, p
 
 }
 
-int chatbot_is_bored(const char *intent){
-	if (compare_token(intent, "bored") == 0){
+int chatbot_is_bored(int inc, char *inv[]){
+	int i;
+	for (i=0; i < inc; i++){
+		if (compare_token(inv[i], "bored") == 0){
 		return 1;
+		}
 	}
-
 	return 0;
 }
 
 int chatbot_do_game(int inc, char *inv[], char *response, int n){
-	system("tictactoe.exe");
-	return 0;
+	char input[MAX_INPUT];
+	printf("%s: Would you like to play a game?\n", chatbot_botname());
+	printf("%s: ", chatbot_username());
+	fgets(input, MAX_INPUT, stdin);
+	if (compare_token(input, "yes") == 0){
+		system("tictactoe.exe");
+		snprintf(response, n, "Thank you for playing with me");
+	}
+	else {
+		snprintf(response, n, ":( Okay..");
+		return 0;
+	}
 }
 
 /*
@@ -171,7 +184,7 @@ int chatbot_do_exit(int inc, char *inv[], char *response, int n) {
  */
 int chatbot_is_load(const char *intent) {
 	if (compare_token(intent, "load") == 0){
-		printf("load detected\n");
+		printf("Load detected\n");
 	}
 	return compare_token(intent, "load") == 0;
 	
@@ -193,11 +206,11 @@ int chatbot_do_load(int inc, char *inv[], char *response, int n, ini_t **content
 		i++;
 	}
 	*content = ini_load(inv[i]);
-	if (content != NULL){
+	if (access(inv[i], F_OK) != -1){
 		snprintf(response, n, "Load successful");
 	}
 	else {
-		snprintf(response, n, "Load failed");
+		snprintf(response, n, "Load failed or file does not exist");
 	}
 	 
 	return 0;

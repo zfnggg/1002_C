@@ -73,11 +73,14 @@ int main()
     board();
     
     if (i == 1)
-        printf("==>\aPlayer %d win ", --player);
+        printf("==>\aPlayer %d win\n", --player);
     else
-        printf("==>\aGame draw");
+        printf("==>\aGame draw\n");
 
+    printf("Press any key to continue.\n");
     getch();
+
+    
 
     return 0;
 }
