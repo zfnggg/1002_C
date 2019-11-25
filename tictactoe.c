@@ -17,8 +17,15 @@ int main()
         player = (player % 2) ? 1 : 2;
 
         if (player == 1){
+            int temp, status;
+
             printf("Player %d, enter a number:  ", player);
-            scanf("%d", &choice);
+            status = scanf("%d", &choice);
+            while(status!=1){
+                while((temp=getchar()) != EOF && temp != '\n');
+                printf("Player %d, Please enter a number: ", player);
+                status = scanf("%d", &choice);
+            }
             
         }
 
