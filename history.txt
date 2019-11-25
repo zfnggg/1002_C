@@ -1,0 +1,3 @@
+Chatbot: Hello, I'm Chatbot.
+User: bored
+Chatbot: Thank you for playing with me

@@ -19,6 +19,7 @@ int main()
         if (player == 1){
             printf("Player %d, enter a number:  ", player);
             scanf("%d", &choice);
+            
         }
 
         if (player == 2){

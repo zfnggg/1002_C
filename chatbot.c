@@ -126,6 +126,7 @@ int chatbot_do_game(int inc, char *inv[], char *response, int n){
 	printf("%s: Would you like to play a game?\n", chatbot_botname());
 	printf("%s: ", chatbot_username());
 	fgets(input, MAX_INPUT, stdin);
+	strtok(input, "\n");
 	if (compare_token(input, "yes") == 0){
 		system("tictactoe.exe");
 		snprintf(response, n, "Thank you for playing with me");
