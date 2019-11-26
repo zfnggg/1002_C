@@ -177,7 +177,7 @@ int chatbot_do_load(int inc, char *inv[], char *response, int n, ini_t **content
 		i++;
 	}
 	*content = ini_load(inv[i]);
-	if (content != NULL){
+	if (*content != NULL){
 		snprintf(response, n, "Load successful");
 	}
 	else {
@@ -231,6 +231,7 @@ int chatbot_do_question(int inc, char *inv[], char *response, int n, ini_t **con
 	strcpy(entity, inv[2]);
 	
 	int status = knowledge_get(inv[0], entity, response, n, content, head);
+	printf("%d", status);
 	if (status == KB_INVALID){
 		snprintf(response, n, "I don\'t understand \"%s\"", inv[0]);
 	}
