@@ -253,7 +253,7 @@ int chatbot_is_question(const char *intent) {
  *   0 (the chatbot always continues chatting after a question)
  */
 int chatbot_do_question(int inc, char *inv[], char *response, int n, ini_t **content, pknowledge *head) {
-	char entity[MAX_ENTITY], filler[5] = "";
+	char entity[MAX_ENTITY]="", filler[5] = "";
 	int status;
 	
 	// assuming the 3rd word is the entity (will change)
@@ -263,13 +263,16 @@ int chatbot_do_question(int inc, char *inv[], char *response, int n, ini_t **con
 			strcpy(filler, inv[i]);
 			i++;
 		}
-		strcpy(entity, inv[i]);
-		status = knowledge_get(inv[0], entity, response, n, content, head);
+		strcat(entity, inv[i]);
+		if (inv[i+1] != '\0')
+			strcat(entity, " ");
 		
-		if (status == KB_OK){
-			return 0;
-		}
 		i++;
+	}
+	status = knowledge_get(inv[0], entity, response, n, content, head);
+		
+	if (status == KB_OK){
+		return 0;
 	}
 	if (status == KB_INVALID){
 		snprintf(response, n, "I don\'t understand \"%s\"", inv[0]);
@@ -286,7 +289,7 @@ int chatbot_do_question(int inc, char *inv[], char *response, int n, ini_t **con
 		printf("%s: ", chatbot_username());
 		fgets(input, MAX_INPUT, stdin);
 		strtok(input, "\n");
-		if (knowledge_put(inv[0], inv[i-1], input, head) == 0){
+		if (knowledge_put(inv[0], entity, input, head) == 0){
 			snprintf(response, n, "Answer added successfully");
 		}
 		else {
