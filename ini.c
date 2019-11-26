@@ -101,7 +101,7 @@ end:
  * values using one or more '\0' as a delimiter. Unescapes quoted values */
 static void split_data(ini_t *ini) {
   char *value_start, *line_start;
-  char *p = ini->data;
+  char *p = ini->data; //p points to the start of the data block
 
   while (p < ini->end) {
     switch (*p) {
@@ -117,24 +117,24 @@ static void split_data(ini_t *ini) {
         break;
 
       case '[':
-        p += strcspn(p, "]\n");
-        *p = '\0';
+        p += strcspn(p, "]\n"); //strcspn calculates the first occurance of a "]\n" in the string
+        *p = '\0'; //change the "]" into "\0"
         break;
 
       case ';':
-        p = discard_line(ini, p);
+        p = discard_line(ini, p); // *p++ = '\0'
         break;
 
       default:
-        line_start = p;
-        p += strcspn(p, "=\n");
+        line_start = p; 
+        p += strcspn(p, "=\n"); //Shift P pointer to the first occurance of '='
 
         /* Is line missing a '='? */
         if (*p != '=') {
-          p = discard_line(ini, line_start);
+          p = discard_line(ini, line_start); //*line_start++ = "\0"
           break;
         }
-        trim_back(ini, p - 1);
+        trim_back(ini, p - 1); //*p-2 = "\0"
 
         /* Replace '=' and whitespace after it with '\0' */
         do {
@@ -143,7 +143,7 @@ static void split_data(ini_t *ini) {
 
         /* Is a value after '=' missing? */
         if (*p == '\n' || *p == '\0') {
-          p = discard_line(ini, line_start);
+          p = discard_line(ini, line_start); //*line_start++ = "\0" 
           break;
         }
 
@@ -164,7 +164,7 @@ static void split_data(ini_t *ini) {
         } else {
           /* Handle normal value */
           p += strcspn(p, "\n");
-          trim_back(ini, p - 1);
+          trim_back(ini, p - 1); // *p=2 = '\0'
         }
         break;
     }
@@ -183,7 +183,7 @@ ini_t* ini_load(const char *filename) {
   if (!ini) {
     goto fail;
   }
-  memset(ini, 0, sizeof(*ini));
+  memset(ini, 0, sizeof(*ini)); //Change content of ini string to '0's
 
   /* Open file */
   fp = fopen(filename, "rb");
@@ -192,15 +192,15 @@ ini_t* ini_load(const char *filename) {
   }
 
   /* Get file size */
-  fseek(fp, 0, SEEK_END);
-  sz = ftell(fp);
-  rewind(fp);
+  fseek(fp, 0, SEEK_END); //Move fp to the End of the file
+  sz = ftell(fp); //Get size of the entire file
+  rewind(fp); //Reset the fp to the start of the file
 
   /* Load file content into memory, null terminate, init end var */
-  ini->data = malloc(sz + 1);
-  ini->data[sz] = '\0';
-  ini->end = ini->data  + sz;
-  n = fread(ini->data, 1, sz, fp);
+  ini->data = malloc(sz + 1); //Allocate memory location of file size + 1 extra btye
+  ini->data[sz] = '\0'; //Store '\0' into the 1 extra btye allocated 
+  ini->end = ini->data  + sz; //Set end pointer to point to the end of the file
+  n = fread(ini->data, 1, sz, fp); //fread (point to the block of memory to read, number pf btye for each memory block, number of blocks, file stream)
   if (n != sz) {
     goto fail;
   }
