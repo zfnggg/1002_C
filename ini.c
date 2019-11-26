@@ -308,7 +308,7 @@ int ini_write(ini_t *ini, const char *section, const char *key, const char *stri
       p = val;
     }
 
-    if (!section_found && !key_found && *next(ini, p)=='['){
+    if (!section_found && !key_found && (*next(ini, p)=='[' || *next(ini, p)==*(ini->end))){
       sprintf(temp, "%s=%s\n", key, string);
       fwrite(temp, 1, strlen(temp), fp);
     }

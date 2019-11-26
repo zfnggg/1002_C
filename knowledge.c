@@ -151,13 +151,13 @@ int knowledge_write(ini_t **content, pknowledge *head) {
 		return -2;
 	}
 	else{
-		pknowledge temp = *head;
-		while (temp != NULL){
-			ini_write(*content, temp->intent, temp->entity, temp->answer);
+		pknowledge temp;
+		while (*head != NULL){
+			ini_write(*content, (*head)->intent, (*head)->entity, (*head)->answer);
 			*content = ini_load("output.ini");
-			pknowledge to_destroy = temp;
-			temp = temp->next;
-			free(to_destroy);
+			temp = *head;
+			*head = (*head)->next;
+			free(temp);
 		}
 		return 0;
 	}
