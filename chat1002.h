@@ -39,9 +39,12 @@ struct knowledge_node{
 };
 typedef struct knowledge_node knowledge;
 typedef knowledge *pknowledge;
+FILE *history;
 
 /* structure that will contain the data of the file as well as the end character */
 typedef struct ini_t ini_t;
+
+int		tictactoe();
 
 ini_t*      ini_load(const char *filename);
 void        ini_free(ini_t *ini);
@@ -69,6 +72,8 @@ int chatbot_is_save(const char *intent);
 int chatbot_do_save(int inc, char *inv[], char *response, int n, ini_t **content, pknowledge *head);
 int chatbot_is_smalltalk(const char *intent);
 int chatbot_do_smalltalk(int inc, char *inv[], char *response, int n);
+int chatbot_is_bored(int inc, char *inv[]);
+int chatbot_do_game(int inc, char *inv[], char *response, int n);
 
 /* functions defined in knowledge.c */
 int knowledge_get(const char *intent, const char *entity, char *response, int n, ini_t **content, pknowledge *head);

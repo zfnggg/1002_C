@@ -43,6 +43,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "chat1002.h"
+#include <unistd.h>
  
  
 /*
@@ -100,6 +101,9 @@ int chatbot_main(int inc, char *inv[], char *response, int n, ini_t **content, p
 		return chatbot_do_reset(inc, inv, response, n);
 	else if (chatbot_is_save(inv[0]))
 		return chatbot_do_save(inc, inv, response, n, content, head);
+	else if (chatbot_is_bored(inc, inv)){
+		return chatbot_do_game(inc, inv, response, n);
+	}
 	else {
 		snprintf(response, n, "I don't understand \"%s\".", inv[0]);
 		return 0;
@@ -107,6 +111,31 @@ int chatbot_main(int inc, char *inv[], char *response, int n, ini_t **content, p
 
 }
 
+int chatbot_is_bored(int inc, char *inv[]){
+	int i;
+	for (i=0; i < inc; i++){
+		if (compare_token(inv[i], "bored") == 0){
+		return 1;
+		}
+	}
+	return 0;
+}
+
+int chatbot_do_game(int inc, char *inv[], char *response, int n){
+	char input[MAX_INPUT];
+	printf("%s: Would you like to play a game?\n", chatbot_botname());
+	printf("%s: ", chatbot_username());
+	fgets(input, MAX_INPUT, stdin);
+	strtok(input, "\n");
+	if (compare_token(input, "yes") == 0){
+		system("tictactoe.exe");
+		snprintf(response, n, "Thank you for playing with me");
+	}
+	else {
+		snprintf(response, n, ":( Okay..");
+		return 0;
+	}
+}
 
 /*
  * Determine whether an intent is EXIT.
@@ -137,6 +166,7 @@ int chatbot_is_exit(const char *intent) {
 int chatbot_do_exit(int inc, char *inv[], char *response, int n) {
 	 
 	snprintf(response, n, "Goodbye!");
+	fclose(history);
 	 
 	return 1;
 	 
@@ -155,7 +185,7 @@ int chatbot_do_exit(int inc, char *inv[], char *response, int n) {
  */
 int chatbot_is_load(const char *intent) {
 	if (compare_token(intent, "load") == 0){
-		printf("load detected\n");
+		printf("Load detected\n");
 	}
 	return compare_token(intent, "load") == 0;
 	
@@ -177,11 +207,11 @@ int chatbot_do_load(int inc, char *inv[], char *response, int n, ini_t **content
 		i++;
 	}
 	*content = ini_load(inv[i]);
-	if (*content != NULL){
+	if (access(inv[i], F_OK) != -1){
 		snprintf(response, n, "Load successful");
 	}
 	else {
-		snprintf(response, n, "Load failed");
+		snprintf(response, n, "Load failed or file does not exist");
 	}
 	 
 	return 0;
@@ -200,8 +230,6 @@ int chatbot_do_load(int inc, char *inv[], char *response, int n, ini_t **content
  *  0, otherwise
  */
 int chatbot_is_question(const char *intent) {
-	
-	/* to be implemented */
 	if (compare_token(intent, "what") == 0 || compare_token(intent, "where") == 0 || compare_token(intent, "who") == 0){
 		return 1;
 	}
@@ -225,33 +253,48 @@ int chatbot_is_question(const char *intent) {
  *   0 (the chatbot always continues chatting after a question)
  */
 int chatbot_do_question(int inc, char *inv[], char *response, int n, ini_t **content, pknowledge *head) {
-	char entity[MAX_ENTITY];
+	char entity[MAX_ENTITY], filler[5] = "";
+	int status;
 	
 	// assuming the 3rd word is the entity (will change)
-	strcpy(entity, inv[2]);
-	
-	int status = knowledge_get(inv[0], entity, response, n, content, head);
-	printf("%d", status);
+	int i=1;
+	while (inv[i] != NULL){
+		if (compare_token(inv[i], "is") == 0 || compare_token(inv[i], "are") == 0 ){
+			strcpy(filler, inv[i]);
+			i++;
+		}
+		strcpy(entity, inv[i]);
+		status = knowledge_get(inv[0], entity, response, n, content, head);
+		
+		if (status == KB_OK){
+			return 0;
+		}
+		i++;
+	}
 	if (status == KB_INVALID){
 		snprintf(response, n, "I don\'t understand \"%s\"", inv[0]);
 	}
 	else if (status == KB_NOTFOUND){
 		char input[MAX_INPUT];
-		snprintf(response, n, "I don\'t know, %s?", *inv);
+		if (compare_token(filler, "") == 0){
+			snprintf(response, n, "I don\'t know, %s %s?", inv[0], entity);
+		}
+		else {
+			snprintf(response, n, "I don\'t know, %s %s %s?", inv[0], filler, entity);
+		}
 		printf("%s: %s\n", chatbot_botname(), response);
 		printf("%s: ", chatbot_username());
 		fgets(input, MAX_INPUT, stdin);
 		strtok(input, "\n");
-		if (knowledge_put(inv[0], inv[2], input, head) == 0){
+		if (knowledge_put(inv[0], inv[i-1], input, head) == 0){
 			snprintf(response, n, "Answer added successfully");
 		}
 		else {
 			snprintf(response, n, "There was a problem adding answer to database");
 		}
 	}
-	else if (status == KB_OK){
-		return 0;
-	}
+	
+	
 	 
 	return 0;
 	 
@@ -270,7 +313,8 @@ int chatbot_do_question(int inc, char *inv[], char *response, int n, ini_t **con
  */
 int chatbot_is_reset(const char *intent) {
 	
-	return 0;
+		return 0;
+	
 	
 }
 
@@ -372,7 +416,6 @@ int chatbot_is_smalltalk(const char *intent) {
 			return 1;
 		}
 	}
-	/* to be implemented */
 	return 0;
  
 }
