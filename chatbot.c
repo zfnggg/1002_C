@@ -255,13 +255,22 @@ int chatbot_is_question(const char *intent) {
 int chatbot_do_question(int inc, char *inv[], char *response, int n, ini_t **content, pknowledge *head) {
 	char entity[MAX_ENTITY]="", filler[5] = "";
 	int status;
+	/*List of function words to exclude from entity*/
+	const char *function_words[10] = {"the", "of", "that", "this", "those", "these", "which", "a", "an"};
 	
 	// assuming the 3rd word is the entity (will change)
-	int i=1;
+	int i=1, j=0;
 	while (inv[i] != NULL){
+		
 		if (compare_token(inv[i], "is") == 0 || compare_token(inv[i], "are") == 0 ){
 			strcpy(filler, inv[i]);
 			i++;
+		}
+		while (function_words[j] != NULL){
+			if (compare_token(inv[i], function_words[j]) == 0)
+				i++;
+
+			j++;
 		}
 		strcat(entity, inv[i]);
 		if (inv[i+1] != '\0')
@@ -269,6 +278,7 @@ int chatbot_do_question(int inc, char *inv[], char *response, int n, ini_t **con
 		
 		i++;
 	}
+	
 	status = knowledge_get(inv[0], entity, response, n, content, head);
 		
 	if (status == KB_OK){

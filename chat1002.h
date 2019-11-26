@@ -37,6 +37,8 @@ struct knowledge_node{
 	char answer[MAX_RESPONSE];
 	struct knowledge_node *next;
 };
+
+
 typedef struct knowledge_node knowledge;
 typedef knowledge *pknowledge;
 FILE *history;
