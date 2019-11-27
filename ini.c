@@ -159,11 +159,11 @@ static void split_data(ini_t *ini) {
           }
 
           /* Discard the rest of the line after the string value */
-          p = discard_line(ini, p);
+          p = discard_line(ini, p); //*p++ = '\0'
 
         } else {
           /* Handle normal value */
-          p += strcspn(p, "\n");
+          p += strcspn(p, "\n"); //Shift the p pointer to the first occurance of \n
           trim_back(ini, p - 1); // *p=2 = '\0'
         }
         break;
