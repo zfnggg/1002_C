@@ -75,6 +75,8 @@ int main(int argc, char *argv[]) {
 		fprintf(history, "%s: %s\n", chatbot_botname(), output);
 		
 	} while (!done);
+
+	getch(); //Prevents the program from closing immediately
 	
 	return 0;
 }
