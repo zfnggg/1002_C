@@ -1,3 +1,0 @@
-Chatbot: Hello, I'm Chatbot.
-User: bye
-Chatbot: See you soon!
