@@ -131,6 +131,7 @@ int chatbot_do_game(int inc, char *inv[], char *response, int n){
 	if (compare_token(input, "yes") == 0){
 		system("tictactoe.exe");
 		snprintf(response, n, "Thank you for playing with me");
+		return 0;
 	}
 	else {
 		snprintf(response, n, ":( Okay..");
@@ -330,6 +331,7 @@ int chatbot_is_reset(char* response, int n, const char *intent) {
 	if (compare_token(intent, "reset") == 0)
 	{
 		snprintf(response, 19, "Initialising Reset");
+
 		return 1;
 	}
 	else
