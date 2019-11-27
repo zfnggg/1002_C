@@ -92,24 +92,55 @@ int chatbot_main(int inc, char *inv[], char *response, int n, ini_t **content, p
 	/* look for an intent and invoke the corresponding do_* function */
 	if (chatbot_is_exit(inv[0]))
 		return chatbot_do_exit(inc, inv, response, n);
-	else if (chatbot_is_smalltalk(inv[0]))
-		return chatbot_do_smalltalk(inc, inv, response, n);
 	else if (chatbot_is_load(inv[0]))
 		return chatbot_do_load(inc, inv, response, n, content);
+	else if (chatbot_is_reset(response, inv[0]))
+		return chatbot_do_reset(response, head);
 	else if (chatbot_is_question(inv[0]))
 		return chatbot_do_question(inc, inv, response, n, content, head);
-	else if (chatbot_is_reset(response, n, inv[0]))
-		return chatbot_do_reset(inc, inv, response, n);
+	else if (chatbot_is_smalltalk(inv[0]))
+		return chatbot_do_smalltalk(inc, inv, response, n);
 	else if (chatbot_is_save(inv[0]))
 		return chatbot_do_save(inc, inv, response, n, content, head);
-	else if (chatbot_is_bored(inc, inv)){
+	else if (chatbot_is_bored(inc, inv))
 		return chatbot_do_game(inc, inv, response, n);
-	}
+	else if (chatbot_is_google(inv[0]))
+		return chatbot_do_google(inc, inv, response, n);
 	else {
 		snprintf(response, n, "I don't understand \"%s\".", inv[0]);
 		return 0;
 	}
 
+}
+
+int chatbot_is_google(const char *intent){
+	if (compare_token(intent, "google") == 0 || compare_token(intent, "search") == 0)
+		return 1;
+
+
+	return 0;
+
+}
+
+
+int chatbot_do_google(int inc, char *inv[], char *response, int n){
+	int i;
+	char google_search[MAX_RESPONSE] = "START www.google.com/search?q=";
+	char entity[MAX_ENTITY] = "";
+	for (i=1; i < inc; i++){
+		if (compare_token(inv[i], "for") == 0)
+			i++;
+		strcat(google_search, inv[i]);
+		strcat(entity, inv[i]);
+		if (inv[i+1] != '\0'){
+			strcat(google_search, "+");
+		 	strcat(entity, " ");
+		}
+	}
+	snprintf(response, n, "Alright, I will search Google for %s.", entity);
+	system(google_search);
+
+	return 0;
 }
 
 int chatbot_is_bored(int inc, char *inv[]){
@@ -232,9 +263,15 @@ int chatbot_do_load(int inc, char *inv[], char *response, int n, ini_t **content
  *  0, otherwise
  */
 int chatbot_is_question(const char *intent) {
-	if (compare_token(intent, "what") == 0 || compare_token(intent, "where") == 0 || compare_token(intent, "who") == 0){
-		return 1;
+	const char *question_words[11] = {"what", "where", "who", "waht", "wher", "whr", "whre", "whoo", "woh", "wat"};
+	int i=0;
+	while (question_words[i] != NULL){
+		if (compare_token(intent, question_words[i]) == 0){
+			return 1;
+		}
+		i++;
 	}
+	
 	
 	return 0;
 	
@@ -280,6 +317,12 @@ int chatbot_do_question(int inc, char *inv[], char *response, int n, ini_t **con
 		
 		i++;
 	}
+	if (compare_token(inv[0], "whr") == 0 || compare_token(inv[0], "wher") == 0 || compare_token(inv[0], "whre") == 0)
+		inv[0] = "where";
+	else if (compare_token(inv[0], "woh") == 0 || compare_token(inv[0], "whoo") == 0)
+		inv[0] = "who";
+	else if (compare_token(inv[0], "waht") == 0 || compare_token(inv[0], "wat") == 0)
+		inv[0] = "what";
 	
 	status = knowledge_get(inv[0], entity, response, n, content, head);
 		
@@ -326,11 +369,11 @@ int chatbot_do_question(int inc, char *inv[], char *response, int n, ini_t **con
  *  1, if the intent is "reset"
  *  0, otherwise
  */
-int chatbot_is_reset(char* response, int n, const char *intent) {
+int chatbot_is_reset(char *response, const char *intent) {
 
 	if (compare_token(intent, "reset") == 0)
 	{
-		snprintf(response, 19, "Initialising Reset");
+		snprintf(response, n, "Initialising Reset");
 
 		return 1;
 	}
@@ -350,9 +393,29 @@ int chatbot_is_reset(char* response, int n, const char *intent) {
  * Returns:
  *   0 (the chatbot always continues chatting after beign reset)
  */
-int chatbot_do_reset(int inc, char *inv[], char *response, int n) 
+int chatbot_do_reset(char* response, pknowledge *head)
 {
-	return 0;
+	
+	pknowledge temp = *head;
+	pknowledge prev = *head;
+	while (temp != NULL)
+	{
+		if (temp->next != NULL)
+		{
+			prev = temp;
+			temp = temp->next;
+			*head = temp;
+			free(prev);
+		}
+		else
+		{
+			*head = temp;
+			free(temp);
+			*head = NULL;
+			snprintf(response, 15, "Reset Complete");
+			return 0;
+		}
+	}
 }
 
 
@@ -399,8 +462,6 @@ int chatbot_do_save(int inc, char *inv[], char *response, int n, ini_t **content
 		snprintf(response, n, "No file to write to, Please load a file");
 		return 0;
 	}
-	
-	return 0;
 	 
 }
  
@@ -485,5 +546,4 @@ int chatbot_do_smalltalk(int inc, char *inv[], char *response, int n) {
 	}
 	
 	return 0;
-
-}	
+}
