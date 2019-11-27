@@ -442,7 +442,7 @@ int chatbot_do_save(int inc, char *inv[], char *response, int n, ini_t **content
 		snprintf(response, n, "No file to write to, Please load a file");
 		return 0;
 	}
-	 
+	return 0;
 }
  
  
