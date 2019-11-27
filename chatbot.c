@@ -98,7 +98,7 @@ int chatbot_main(int inc, char *inv[], char *response, int n, ini_t **content, p
 		return chatbot_do_load(inc, inv, response, n, content);
 	else if (chatbot_is_question(inv[0]))
 		return chatbot_do_question(inc, inv, response, n, content, head);
-	else if (chatbot_is_reset(inv[0]))
+	else if (chatbot_is_reset(response, n, inv[0]))
 		return chatbot_do_reset(inc, inv, response, n);
 	else if (chatbot_is_save(inv[0]))
 		return chatbot_do_save(inc, inv, response, n, content, head);
@@ -325,11 +325,11 @@ int chatbot_do_question(int inc, char *inv[], char *response, int n, ini_t **con
  *  1, if the intent is "reset"
  *  0, otherwise
  */
-int chatbot_is_reset(const char *intent) {
+int chatbot_is_reset(char* response, int n, const char *intent) {
 
 	if (compare_token(intent, "reset") == 0)
 	{
-		printf("Initialising reset\n")
+		snprintf(response, 19, "Initialising Reset");
 		return 1;
 	}
 	else
