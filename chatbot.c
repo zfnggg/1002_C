@@ -326,7 +326,16 @@ int chatbot_do_question(int inc, char *inv[], char *response, int n, ini_t **con
  *  0, otherwise
  */
 int chatbot_is_reset(const char *intent) {
-	return 0;
+
+	if (compare_token(intent, "reset") == 0)
+	{
+		printf("Initialising reset\n")
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
 }
 
 
@@ -358,9 +367,9 @@ int chatbot_do_reset(int inc, char *inv[], char *response, int n)
 int chatbot_is_save(const char *intent) {
 	if (compare_token(intent, "save") == 0){
 		printf("Save detected\n");
-		return 0;
+		return 1;
 	}
-	else return -1;
+	else return 0;
 	
 }
 
