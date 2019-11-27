@@ -263,9 +263,15 @@ int chatbot_do_load(int inc, char *inv[], char *response, int n, ini_t **content
  *  0, otherwise
  */
 int chatbot_is_question(const char *intent) {
-	if (compare_token(intent, "what") == 0 || compare_token(intent, "where") == 0 || compare_token(intent, "who") == 0){
-		return 1;
+	const char *question_words[11] = {"what", "where", "who", "waht", "wher", "whr", "whre", "whoo", "woh", "wat"};
+	int i=0;
+	while (question_words[i] != NULL){
+		if (compare_token(intent, question_words[i]) == 0){
+			return 1;
+		}
+		i++;
 	}
+	
 	
 	return 0;
 	
@@ -311,6 +317,12 @@ int chatbot_do_question(int inc, char *inv[], char *response, int n, ini_t **con
 		
 		i++;
 	}
+	if (compare_token(inv[0], "whr") == 0 || compare_token(inv[0], "wher") == 0 || compare_token(inv[0], "whre") == 0)
+		inv[0] = "where";
+	else if (compare_token(inv[0], "woh") == 0 || compare_token(inv[0], "whoo") == 0)
+		inv[0] = "who";
+	else if (compare_token(inv[0], "waht") == 0 || compare_token(inv[0], "wat") == 0)
+		inv[0] = "what";
 	
 	status = knowledge_get(inv[0], entity, response, n, content, head);
 		
