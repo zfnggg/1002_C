@@ -369,8 +369,8 @@ int chatbot_is_save(const char *intent) {
 		printf("Save detected\n");
 		return 1;
 	}
-	else return 0;
-	
+	return 0; 
+
 }
 
 
@@ -387,12 +387,15 @@ int chatbot_do_save(int inc, char *inv[], char *response, int n, ini_t **content
 	int status = knowledge_write(content, head);
 	if (status == 0){
 		snprintf(response, n, "Successfully written");
+		return 0;
 	}
 	else if (status == -1){
 		snprintf(response, n, "No knowledge base");
+		return 0;
 	}
 	else{
 		snprintf(response, n, "No file to write to, Please load a file");
+		return 0;
 	}
 	
 	return 0;
