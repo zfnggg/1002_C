@@ -359,7 +359,6 @@ int chatbot_do_reset(int inc, char *inv[], char *response, int n, ini_t** conten
 {
 	ini_free(*content);
 	return 0;
-
 }
 
 
@@ -490,4 +489,22 @@ int chatbot_do_smalltalk(int inc, char *inv[], char *response, int n) {
 	
 	return 0;
 	
+int chatbot_is_Eliza(const char* intent) {
+
+	char* intention[strlen(intent)];
+	strcpy(intenton, intent);
+	for (int i = 0; i < strlen(intention); i++)
+	{
+		intention[i] = tolower(intention[i]);
+	}
+
+	if (compare_token(intent, "eliza") == 0) {
+		return 1;
+	}
+	else
+	{	
+		return 0;
+	}
+
+
 }
