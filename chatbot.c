@@ -326,23 +326,7 @@ int chatbot_do_question(int inc, char *inv[], char *response, int n, ini_t **con
  *  0, otherwise
  */
 int chatbot_is_reset(const char *intent) {
-	char* intention[strlen(intent)];
-	strcpy(intenton, intent);
-	for (int i = 0; i < strlen(intention); i++)
-	{
-		intention[i] = tolower(intention[i]);
-	}
-	if (strcmp(intent, "reset") == 0)
-	{
-		printf("Initialising reset\n")
-		return 0;
-	}
-	else
-	{
-		return 1;
-	}
-	
-	
+	return 0;
 }
 
 
@@ -355,9 +339,8 @@ int chatbot_is_reset(const char *intent) {
  * Returns:
  *   0 (the chatbot always continues chatting after beign reset)
  */
-int chatbot_do_reset(int inc, char *inv[], char *response, int n, ini_t** content) 
+int chatbot_do_reset(int inc, char *inv[], char *response, int n) 
 {
-	ini_free(*content);
 	return 0;
 }
 
@@ -488,23 +471,5 @@ int chatbot_do_smalltalk(int inc, char *inv[], char *response, int n) {
 	}
 	
 	return 0;
-	
-int chatbot_is_Eliza(const char* intent) {
 
-	char* intention[strlen(intent)];
-	strcpy(intenton, intent);
-	for (int i = 0; i < strlen(intention); i++)
-	{
-		intention[i] = tolower(intention[i]);
-	}
-
-	if (compare_token(intent, "eliza") == 0) {
-		return 1;
-	}
-	else
-	{	
-		return 0;
-	}
-
-
-}
+}	
