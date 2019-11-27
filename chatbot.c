@@ -92,14 +92,14 @@ int chatbot_main(int inc, char *inv[], char *response, int n, ini_t **content, p
 	/* look for an intent and invoke the corresponding do_* function */
 	if (chatbot_is_exit(inv[0]))
 		return chatbot_do_exit(inc, inv, response, n);
-	else if (chatbot_is_smalltalk(inv[0]))
-		return chatbot_do_smalltalk(inc, inv, response, n);
 	else if (chatbot_is_load(inv[0]))
 		return chatbot_do_load(inc, inv, response, n, content);
+	else if (chatbot_is_reset(response, inv[0]))
+		return chatbot_do_reset(response, head);
 	else if (chatbot_is_question(inv[0]))
 		return chatbot_do_question(inc, inv, response, n, content, head);
-	else if (chatbot_is_reset(response, n, inv[0]))
-		return chatbot_do_reset(inc, inv, response, n);
+	else if (chatbot_is_smalltalk(inv[0]))
+		return chatbot_do_smalltalk(inc, inv, response, n);
 	else if (chatbot_is_save(inv[0]))
 		return chatbot_do_save(inc, inv, response, n, content, head);
 	else if (chatbot_is_bored(inc, inv))
@@ -369,7 +369,7 @@ int chatbot_do_question(int inc, char *inv[], char *response, int n, ini_t **con
  *  1, if the intent is "reset"
  *  0, otherwise
  */
-int chatbot_is_reset(char* response, int n, const char *intent) {
+int chatbot_is_reset(char *response, const char *intent) {
 
 	if (compare_token(intent, "reset") == 0)
 	{
@@ -393,9 +393,29 @@ int chatbot_is_reset(char* response, int n, const char *intent) {
  * Returns:
  *   0 (the chatbot always continues chatting after beign reset)
  */
-int chatbot_do_reset(int inc, char *inv[], char *response, int n) 
+int chatbot_do_reset(char* response, pknowledge *head)
 {
-	return 0;
+	
+	pknowledge temp = *head;
+	pknowledge prev = *head;
+	while (temp != NULL)
+	{
+		if (temp->next != NULL)
+		{
+			prev = temp;
+			temp = temp->next;
+			*head = temp;
+			free(prev);
+		}
+		else
+		{
+			*head = temp;
+			free(temp);
+			*head = NULL;
+			snprintf(response, 15, "Reset Complete");
+			return 0;
+		}
+	}
 }
 
 
