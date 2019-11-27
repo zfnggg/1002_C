@@ -358,9 +358,9 @@ int chatbot_do_reset(int inc, char *inv[], char *response, int n)
 int chatbot_is_save(const char *intent) {
 	if (compare_token(intent, "save") == 0){
 		printf("Save detected\n");
-		return 1;
+		return 0;
 	}
-	else return 0;
+	else return -1;
 	
 }
 
