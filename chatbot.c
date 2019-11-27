@@ -94,8 +94,8 @@ int chatbot_main(int inc, char *inv[], char *response, int n, ini_t **content, p
 		return chatbot_do_exit(inc, inv, response, n);
 	else if (chatbot_is_load(inv[0]))
 		return chatbot_do_load(inc, inv, response, n, content);
-	else if (chatbot_is_reset(response, inv[0]))
-		return chatbot_do_reset(response, head);
+	else if (chatbot_is_reset(response, n, inv[0]))
+		return chatbot_do_reset(response, n, head, content);
 	else if (chatbot_is_question(inv[0]))
 		return chatbot_do_question(inc, inv, response, n, content, head);
 	else if (chatbot_is_smalltalk(inv[0]))
@@ -329,10 +329,10 @@ int chatbot_do_question(int inc, char *inv[], char *response, int n, ini_t **con
 	if (status == KB_OK){
 		return 0;
 	}
-	if (status == KB_INVALID){
-		snprintf(response, n, "I don\'t understand \"%s\"", inv[0]);
-	}
-	else if (status == KB_NOTFOUND){
+	// if (status == KB_INVALID){
+	// 	snprintf(response, n, "I don\'t understand \"%s\"", inv[0]);
+	// }
+	else{ //(status == KB_NOTFOUND){
 		char input[MAX_INPUT];
 		if (compare_token(filler, "") == 0){
 			snprintf(response, n, "I don\'t know, %s %s?", inv[0], entity);
@@ -369,7 +369,7 @@ int chatbot_do_question(int inc, char *inv[], char *response, int n, ini_t **con
  *  1, if the intent is "reset"
  *  0, otherwise
  */
-int chatbot_is_reset(char *response, const char *intent) {
+int chatbot_is_reset(char *response, int n, const char *intent) {
 
 	if (compare_token(intent, "reset") == 0)
 	{
@@ -393,7 +393,7 @@ int chatbot_is_reset(char *response, const char *intent) {
  * Returns:
  *   0 (the chatbot always continues chatting after beign reset)
  */
-int chatbot_do_reset(char* response, pknowledge *head)
+int chatbot_do_reset(char* response, int n, pknowledge *head, ini_t **content)
 {
 	
 	pknowledge temp = *head;
@@ -406,16 +406,30 @@ int chatbot_do_reset(char* response, pknowledge *head)
 			temp = temp->next;
 			*head = temp;
 			free(prev);
+			if (*content != NULL){
+				ini_free(*content);
+			}
+			snprintf(response, n, "Reset Complete");
+			return 0;
 		}
 		else
 		{
 			*head = temp;
 			free(temp);
 			*head = NULL;
-			snprintf(response, 15, "Reset Complete");
+			if (*content != NULL){
+				ini_free(*content);
+			}
+			snprintf(response, n, "Reset Complete");
 			return 0;
 		}
 	}
+	if (*content != NULL){
+		ini_free(*content);
+		snprintf(response, n, "Reset Complete");
+		return 0;
+	}
+	
 }
 
 
