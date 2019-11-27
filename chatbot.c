@@ -329,7 +329,7 @@ int chatbot_is_reset(const char *intent) {
 
 	if (compare_token(intent, "reset") == 0)
 	{
-		printf("Initialising reset\n")
+		printf("Initialising reset\n");
 		return 1;
 	}
 	else
