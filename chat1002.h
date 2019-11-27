@@ -76,6 +76,9 @@ int chatbot_is_smalltalk(const char *intent);
 int chatbot_do_smalltalk(int inc, char *inv[], char *response, int n);
 int chatbot_is_bored(int inc, char *inv[]);
 int chatbot_do_game(int inc, char *inv[], char *response, int n);
+int chatbot_is_google(const char *intent);
+int chatbot_do_google(int inc, char *inv[], char *response, int n);
+
 
 /* functions defined in knowledge.c */
 int knowledge_get(const char *intent, const char *entity, char *response, int n, ini_t **content, pknowledge *head);

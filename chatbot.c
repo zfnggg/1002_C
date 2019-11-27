@@ -102,14 +102,45 @@ int chatbot_main(int inc, char *inv[], char *response, int n, ini_t **content, p
 		return chatbot_do_reset(inc, inv, response, n);
 	else if (chatbot_is_save(inv[0]))
 		return chatbot_do_save(inc, inv, response, n, content, head);
-	else if (chatbot_is_bored(inc, inv)){
+	else if (chatbot_is_bored(inc, inv))
 		return chatbot_do_game(inc, inv, response, n);
-	}
+	else if (chatbot_is_google(inv[0]))
+		return chatbot_do_google(inc, inv, response, n);
 	else {
 		snprintf(response, n, "I don't understand \"%s\".", inv[0]);
 		return 0;
 	}
 
+}
+
+int chatbot_is_google(const char *intent){
+	if (compare_token(intent, "google") == 0 || compare_token(intent, "search") == 0)
+		return 1;
+
+
+	return 0;
+
+}
+
+
+int chatbot_do_google(int inc, char *inv[], char *response, int n){
+	int i;
+	char google_search[MAX_RESPONSE] = "START www.google.com/search?q=";
+	char entity[MAX_ENTITY] = "";
+	for (i=1; i < inc; i++){
+		if (compare_token(inv[i], "for") == 0)
+			i++;
+		strcat(google_search, inv[i]);
+		strcat(entity, inv[i]);
+		if (inv[i+1] != '\0'){
+			strcat(google_search, "+");
+		 	strcat(entity, " ");
+		}
+	}
+	snprintf(response, n, "Alright, I will search Google for %s.", entity);
+	system(google_search);
+
+	return 0;
 }
 
 int chatbot_is_bored(int inc, char *inv[]){
@@ -330,7 +361,7 @@ int chatbot_is_reset(char* response, int n, const char *intent) {
 
 	if (compare_token(intent, "reset") == 0)
 	{
-		snprintf(response, 19, "Initialising Reset");
+		snprintf(response, n, "Initialising Reset");
 
 		return 1;
 	}
@@ -485,5 +516,4 @@ int chatbot_do_smalltalk(int inc, char *inv[], char *response, int n) {
 	}
 	
 	return 0;
-
-}	
+}
