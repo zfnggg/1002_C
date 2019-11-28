@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
 	/* initialise the chatbot */
 	inv[0] = "reset";
 	inv[1] = NULL;
-	chatbot_do_reset(1, inv, output, MAX_RESPONSE);
+	//chatbot_do_reset(head);
 	
 	/* print a welcome message */
 	printf("%s: Hello, I'm %s.\n", chatbot_botname(), chatbot_botname());

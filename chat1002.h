@@ -68,14 +68,17 @@ int chatbot_is_load(const char *intent);
 int chatbot_do_load(int inc, char *inv[], char *response, int n, ini_t **content);
 int chatbot_is_question(const char *intent);
 int chatbot_do_question(int inc, char *inv[], char *response, int n, ini_t **content, pknowledge *head);
-int chatbot_is_reset(char* response, int n, const char *intent);
-int chatbot_do_reset(int inc, char *inv[], char *response, int n);
+int chatbot_is_reset(char *response, int n, const char *intent);
+int chatbot_do_reset(char *response, int n, pknowledge *head, ini_t **content);
 int chatbot_is_save(const char *intent);
 int chatbot_do_save(int inc, char *inv[], char *response, int n, ini_t **content, pknowledge *head);
 int chatbot_is_smalltalk(const char *intent);
 int chatbot_do_smalltalk(int inc, char *inv[], char *response, int n);
 int chatbot_is_bored(int inc, char *inv[]);
 int chatbot_do_game(int inc, char *inv[], char *response, int n);
+int chatbot_is_google(const char *intent);
+int chatbot_do_google(int inc, char *inv[], char *response, int n);
+
 
 /* functions defined in knowledge.c */
 int knowledge_get(const char *intent, const char *entity, char *response, int n, ini_t **content, pknowledge *head);

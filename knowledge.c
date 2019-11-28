@@ -159,5 +159,4 @@ int knowledge_write(ini_t **content, pknowledge *head) {
 		}
 		return 0;
 	}
-	
 }

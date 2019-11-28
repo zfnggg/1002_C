@@ -265,6 +265,7 @@ int ini_get(ini_t *ini, const char *section, const char *key, char *string) {
 
 int ini_write(ini_t *ini, const char *section, const char *key, const char *string) {
   // Creates a file handle using a given filename
+  // section is intent, key is entity, string is answer
   FILE *fp;
   fp = fopen("output.ini", "w");
   if (!fp){
@@ -273,9 +274,9 @@ int ini_write(ini_t *ini, const char *section, const char *key, const char *stri
   }
   int first = 1;
 
-  char *current_section = "";
-  char *val;
-  char *p = ini->data;
+  char *current_section = ""; //empty string
+  char *val; //char pointer
+  char *p = ini->data; //ini has ini->data and ini->end *p points to the start of the string in ini->data
   char *output = (char *)malloc(sizeof(char)*100);
   char *temp = (char *)malloc(sizeof(char)*50);
   int key_found = 0;
