@@ -277,8 +277,8 @@ int ini_write(ini_t *ini, const char *section, const char *key, const char *stri
   char *current_section = ""; //empty string
   char *val; //char pointer
   char *p = ini->data; //ini has ini->data and ini->end *p points to the start of the string in ini->data
-  char output[MAX_RESPONSE];
-  char temp[MAX_RESPONSE];
+  char *output = (char *)malloc(sizeof(char)*100);
+  char *temp = (char *)malloc(sizeof(char)*50);
   int key_found = 0;
   int section_found = 0;
   int correct_section;
@@ -308,10 +308,11 @@ int ini_write(ini_t *ini, const char *section, const char *key, const char *stri
       }
       p = val;
     }
+    
 
     if (!section_found && !key_found && (*next(ini, p)=='[' || *next(ini, p)==*(ini->end))){
       sprintf(temp, "%s=%s\n", key, string);
-      fwrite(temp, 1, strlen(temp), fp);
+      fwrite(temp, 1, strlen(temp)+1, fp);
     }
 
     if (first && *output == '['){
@@ -321,13 +322,13 @@ int ini_write(ini_t *ini, const char *section, const char *key, const char *stri
       fwrite("\n", 1, 1, fp);
     }
 
-    fwrite(output, 1, strlen(output), fp);
+    fwrite(output, 1, strlen(output)+1, fp);
 
     p = next(ini, p);
   }
 
-  // free(temp);
-  // free(output);
+  free(temp);
+  free(output);
   fclose(fp);
 
   if (section_found){

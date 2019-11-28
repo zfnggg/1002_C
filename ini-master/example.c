@@ -9,7 +9,7 @@ int main(){
     char status[25];
 
     // Loading the file into config
-    ini_t *config = ini_load("ICT1002_Group Project Assignment_AY19_T1_Sample.ini");
+    ini_t *config = ini_load("base.ini");
 
     // Writing a new learnt answer to the .ini file given an intent and the entity
     // If intent and entiry already exists, the answer in the file will be updated

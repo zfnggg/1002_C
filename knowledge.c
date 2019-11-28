@@ -91,7 +91,7 @@ int knowledge_put(const char *intent, const char *entity, const char *response, 
 	strcpy(new->entity, entity);
 	strcpy(new->answer, response);
 	new->next = NULL;
-
+	
 	if (*head == NULL){
 		*head = new;
 	}
@@ -102,7 +102,7 @@ int knowledge_put(const char *intent, const char *entity, const char *response, 
 		}
 		temp->next = new;
 	}
-	
+
 	return KB_OK;
 	
 }
@@ -156,6 +156,7 @@ int knowledge_write(ini_t **content, pknowledge *head) {
 			temp = *head;
 			*head = (*head)->next;
 			free(temp);
+			return 0;
 		}
 		return 0;
 	}

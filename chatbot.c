@@ -93,7 +93,7 @@ int chatbot_main(int inc, char *inv[], char *response, int n, ini_t **content, p
 	if (chatbot_is_exit(inv[0]))
 		return chatbot_do_exit(inc, inv, response, n);
 	else if (chatbot_is_load(inv[0]))
-		return chatbot_do_load(inc, inv, response, n, content);
+		return chatbot_do_load(inc, inv, response, n, content, head);
 	else if (chatbot_is_reset(response, n, inv[0]))
 		return chatbot_do_reset(response, n, head, content);
 	else if (chatbot_is_question(inv[0]))
@@ -234,7 +234,7 @@ int chatbot_is_load(const char *intent) {
  * Returns:
  *   0 (the chatbot always continues chatting after loading knowledge)
  */
-int chatbot_do_load(int inc, char *inv[], char *response, int n, ini_t **content) {
+int chatbot_do_load(int inc, char *inv[], char *response, int n, ini_t **content, pknowledge *head) {
 	int i = 1;
 	while (compare_token(inv[i], "from") == 0){
 		i++;
@@ -398,37 +398,59 @@ int chatbot_do_reset(char* response, int n, pknowledge *head, ini_t **content)
 	
 	pknowledge temp = *head;
 	pknowledge prev = *head;
-	while (temp != NULL)
-	{
-		if (temp->next != NULL)
-		{
-			prev = temp;
-			temp = temp->next;
-			*head = temp;
-			free(prev);
-			if (*content != NULL){
-				ini_free(*content);
-			}
-			snprintf(response, n, "Reset Complete");
-			return 0;
-		}
-		else
-		{
-			*head = temp;
-			free(temp);
-			*head = NULL;
-			if (*content != NULL){
-				ini_free(*content);
-			}
-			snprintf(response, n, "Reset Complete");
-			return 0;
-		}
-	}
-	if (*content != NULL){
-		ini_free(*content);
-		snprintf(response, n, "Reset Complete");
+	if (*content == NULL && temp == NULL){
+		snprintf(response, n, "Nothing to reset");
 		return 0;
 	}
+
+	else if (*content != NULL){
+		ini_free(*content);
+		while (temp != NULL)
+		{
+			if (temp->next != NULL)
+			{
+				prev = temp;
+				temp = temp->next;
+				*head = temp;
+				free(prev);
+				snprintf(response, n, "Reset Complete");
+				return 0;
+			}
+			else
+			{
+				*head = temp;
+				free(temp);
+				*head = NULL;
+				snprintf(response, n, "Reset Complete");
+				return 0;
+			}
+		}
+	}
+	else{
+		while (temp != NULL)
+		{
+			if (temp->next != NULL)
+			{
+				prev = temp;
+				temp = temp->next;
+				*head = temp;
+				free(prev);
+				snprintf(response, n, "Reset Complete");
+				return 0;
+			}
+			else
+			{
+				*head = temp;
+				free(temp);
+				*head = NULL;
+				snprintf(response, n, "Reset Complete");
+				return 0;
+			}
+		}
+	}
+	
+	snprintf(response, n, "Reset Complete");
+	return 0;
 	
 }
 
@@ -466,7 +488,6 @@ int chatbot_do_save(int inc, char *inv[], char *response, int n, ini_t **content
 	int status = knowledge_write(content, head);
 	if (status == 0){
 		snprintf(response, n, "Successfully written");
-		knowledge_write(content, head);
 		return 0;
 	}
 	else if (status == -1){
