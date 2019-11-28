@@ -466,6 +466,7 @@ int chatbot_do_save(int inc, char *inv[], char *response, int n, ini_t **content
 	int status = knowledge_write(content, head);
 	if (status == 0){
 		snprintf(response, n, "Successfully written");
+		knowledge_write(content, head);
 		return 0;
 	}
 	else if (status == -1){
