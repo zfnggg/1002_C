@@ -1,0 +1,16 @@
+Chicken: Hello, I'm Chicken.
+Egg: where ok
+Chicken: Answer added successfully
+Egg: load base.ini
+Chicken: Load successful
+Egg: where ok
+Chicken: here
+Egg: where sit
+Chicken: SIT has a main campus at Dover plus a building at each of Singapore's polytechnics.
+Egg: google egg
+Chicken: Alright, I will search Google for egg.
+Egg: save
+Chicken: Successfully written
+Egg: where ok
+Chicken: here
+Egg: quit

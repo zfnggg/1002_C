@@ -54,7 +54,7 @@
  */
 const char *chatbot_botname() {
 
-	return "Chatbot";
+	return "Chicken";
 	
 }
 
@@ -66,7 +66,7 @@ const char *chatbot_botname() {
  */
 const char *chatbot_username() {
 
-	return "User";
+	return "Egg";
 	
 }
 
